@@ -21,6 +21,8 @@ def normalize_team_name(name: str) -> str:
         'UConn': 'Connecticut',
         "St. John's": "St. John's (NY)",
         'Miami': 'Miami FL',
+        'Miami (Ohio)': 'Miami OH',
+        'Miami (OH)': 'Miami OH',
         'Southern California': 'USC',
         'LSU': 'Louisiana St.',
         'VCU': 'Virginia Commonwealth',
@@ -264,7 +266,9 @@ def match_team_name(external_name: str, team_names: list[str],
     if not is_short:
         for norm, orig in norm_to_original.items():
             norm_lower = norm.lower()
-            if (norm_ext_lower in norm_lower or norm_lower in norm_ext_lower) and len(norm_ext_lower) > 4:
-                return orig
+            if len(norm_ext_lower) > 4 and len(norm_lower) > 4:
+                # Only match if one name starts with the other (avoid "Ohio" in "Miami (Ohio)")
+                if norm_ext_lower.startswith(norm_lower) or norm_lower.startswith(norm_ext_lower):
+                    return orig
 
     return None
